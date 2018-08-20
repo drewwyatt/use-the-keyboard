@@ -1,0 +1,22 @@
+{
+  "name": "use-the-keyboard",
+  "version": "0.1.0",
+  "description": "Chrome extension to encourage using keyboard shortcuts for webpages that offer them.",
+  "repository": "git@github.com:drewwyatt/use-the-keyboard.git",
+  "author": "Drew Wyatt <drew.j.wyatt@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@types/chrome": "^0.0.72",
+    "clean-webpack-plugin": "^0.1.19",
+    "copy-webpack-plugin": "^4.5.2",
+    "ts-loader": "^4.5.0",
+    "typescript": "^3.0.1",
+    "webpack": "^4.16.5"
+  },
+  "devDependencies": {
+    "webpack-command": "^0.4.1"
+  }
+}
