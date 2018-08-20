@@ -5,8 +5,10 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 module.exports = {
   entry: {
     background: './src/background.ts',
+    options: './src/options.ts',
+    popup: './src/popup.ts',
   },
-  mode: 'development',
+  mode: 'production',
   module: {
     rules: [
       {
