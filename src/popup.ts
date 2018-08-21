@@ -1,43 +1,53 @@
-const { body } = document;
+import { State, AttributeType } from 'models'
+import { html } from 'utils'
 
-const hasIds = (data: any): data is string[] =>
-  !!(data && (data as string[]).map && data[0] && (data as string[])[0].charAt);
+const { body } = document
 
-chrome.storage.sync.get('blockedIds', ({ blockedIds }) => {
-  console.log('creating buttons for:', blockedIds);
-  if (hasIds(blockedIds)) {
-    const btns = blockedIds.map(id => {
-      const btn = document.createElement('button');
-      btn.value = id;
-      btn.innerHTML = id;
-      btn.addEventListener('click', handler);
-      return btn;
+chrome.storage.sync.get('sites', state => {
+  const { sites } = state as State
+  console.log('creating buttons for:', sites)
+  sites.map(site => {
+    const table = html.table()
+    site.hotkeys.forEach(hotkey => {
+      const row = html.tr()
+      const labelCell = html.td()
+      labelCell.innerText = site.host
+      const buttonCell = html.td()
+      const btn = html.button()
+      btn.value = `${hotkey.attribute}:${hotkey.value}`
+      btn.innerText = `Block ${hotkey.description}`
+      btn.addEventListener('click', handler)
+      buttonCell.appendChild(btn)
+
+      row.appendChild(labelCell)
+      row.appendChild(buttonCell)
+      table.appendChild(row)
+    })
+
+    body.appendChild(table)
+  })
+})
+
+const removeOnClickForId = (pair: string): string => `
+  const [attr, val] = '${pair}'.split(':');
+  if (attr === 'class') {
+    const els = document.getElementsByClassName(val);
+    Array.prototype.forEach.call(els, a => {
+      const b = a.cloneNode(true);
+      b.addEventListener('click', () => alert('Use the keyboard!'));
+      a.parentNode.replaceChild(b, a);
     });
-
-    console.log('btns', btns);
-    btns.forEach(b => body.appendChild(b));
+  } else {
+    // TODO: id
   }
-});
-
-const removeOnClickForId = (id: string): string => (`
-  console.log('stripping handler for ${id}');
-  const a = document.getElementsByClassName('${id}').item(0);
-  const b = a.cloneNode(true);
-  b.addEventListener('click', () => alert('Use the keyboard!'));
-  a.parentNode.replaceChild(b, a);
-`);
+`
 
 const getTargetValue = (event: any): string =>
-  event.target && event.target.value
-    ? event.target.value as string
-    : '';
+  event.target && event.target.value ? (event.target.value as string) : ''
 
-const handler = (event: Event) => (
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      chrome.tabs.executeScript(
-        tabs[0].id!,
-        { code: removeOnClickForId(getTargetValue(event)) },
-      )
-    }
+const handler = (event: Event) =>
+  chrome.tabs.query({ active: true, currentWindow: true }, tabs =>
+    chrome.tabs.executeScript(tabs[0].id!, {
+      code: removeOnClickForId(getTargetValue(event)),
+    }),
   )
-);
