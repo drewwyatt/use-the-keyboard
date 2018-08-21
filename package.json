@@ -6,7 +6,8 @@
   "author": "Drew Wyatt <drew.j.wyatt@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack --watch"
   },
   "dependencies": {
     "@types/chrome": "^0.0.72",
