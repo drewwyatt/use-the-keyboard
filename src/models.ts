@@ -7,6 +7,7 @@ export type Hotkey = {
   attribute: AttributeType
   value: string
   description: string
+  key: string
 }
 
 export type Site = {

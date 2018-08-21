@@ -1,4 +1,4 @@
-import { State, AttributeType } from 'models'
+import { State } from 'models'
 import { html } from 'utils'
 
 const { body } = document
@@ -14,7 +14,7 @@ chrome.storage.sync.get('sites', state => {
       labelCell.innerText = site.host
       const buttonCell = html.td()
       const btn = html.button()
-      btn.value = `${hotkey.attribute}:${hotkey.value}`
+      btn.value = `${hotkey.attribute}:${hotkey.key}:${hotkey.value}`
       btn.innerText = `Block ${hotkey.description}`
       btn.addEventListener('click', handler)
       buttonCell.appendChild(btn)
@@ -29,12 +29,12 @@ chrome.storage.sync.get('sites', state => {
 })
 
 const removeOnClickForId = (pair: string): string => `
-  const [attr, val] = '${pair}'.split(':');
+  const [attr, key, val] = '${pair}'.split(':');
   if (attr === 'class') {
     const els = document.getElementsByClassName(val);
     Array.prototype.forEach.call(els, a => {
       const b = a.cloneNode(true);
-      b.addEventListener('click', () => alert('Use the keyboard!'));
+      b.addEventListener('click', () => alert('Use the keyboard. Press ' + key + '!'));
       a.parentNode.replaceChild(b, a);
     });
   } else {

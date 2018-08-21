@@ -8,6 +8,7 @@ const site: Site = {
     {
       attribute: Class,
       description: 'Compose',
+      key: 'C',
       value: 'T-I J-J5-Ji T-I-KE L3',
     },
   ],
