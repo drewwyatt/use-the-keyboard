@@ -13,6 +13,7 @@
     "@types/chrome": "^0.0.72",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.2",
+    "prettier": "^1.14.2",
     "ts-loader": "^4.5.0",
     "typescript": "^3.0.1",
     "webpack": "^4.16.5"
