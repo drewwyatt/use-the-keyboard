@@ -8,6 +8,7 @@ export type Hotkey = {
   value: string
   description: string
   key: string
+  selected?: boolean
 }
 
 export type Site = {
@@ -18,3 +19,5 @@ export type Site = {
 export type State = {
   sites: Site[]
 }
+
+export type Rule = chrome.events.Rule
