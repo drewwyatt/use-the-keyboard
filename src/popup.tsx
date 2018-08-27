@@ -2,6 +2,7 @@ import * as React from 'react'
 import { render } from 'react-dom'
 import { State, Site, Hotkey, AttributeType } from 'models'
 import { storage, tabs } from 'services'
+import { curry, pipeP } from 'ramda'
 
 const reactRoot = document.createElement('main')
 document.body.appendChild(reactRoot)
@@ -22,12 +23,12 @@ const mapHotkeyToRow = (
   <tr key={`hotkey[${idx}]`}>
     <td>{description}</td>
     <td>
-      <button onClick={handlerFor(attribute, value, key)}>Block</button>
+      <button onClick={createClickHandler(attribute, value, key)}>Block</button>
     </td>
   </tr>
 )
 
-const removeOnClickForId = (
+const removeOnClickWithAttr = (
   attr: AttributeType,
   key: string,
   val: string,
@@ -45,19 +46,38 @@ const removeOnClickForId = (
   }
 `
 
-const handlerFor = (attr: AttributeType, value: string, key: string) => (
-  event: React.MouseEvent<HTMLButtonElement>,
-) => {
-  console.log('ding', attr, value, key)
-  tabs.query().then(t => {
-    console.log('tabs queried', t)
-    if (t && t.length && t[0].id) {
-      tabs.executeScript((t[0] as chrome.tabs.Tab).id as number, {
-        code: removeOnClickForId(attr, key, value),
+const blockClickOnTabWithAttrs = (
+  attr: AttributeType,
+  value: string,
+  key: string,
+  _: React.MouseEvent<HTMLButtonElement>,
+) =>
+  pipeP(
+    tabs.query,
+    wrapInPromise(extractActiveTabId),
+    tryExecuteScriptOnTab(attr, value, key),
+  )({})
+
+const createClickHandler = curry(blockClickOnTabWithAttrs)
+
+const wrapInPromise = <T extends Function>(func: T) => (...args: any[]) =>
+  Promise.resolve(func(...args))
+
+const extractActiveTabId = (tabs: chrome.tabs.Tab[]) =>
+  console.log('extractActiveTabId', tabs) || (tabs && tabs[0])
+    ? tabs[0].id
+    : null
+
+const tryExecuteScriptOnTab = (
+  attrType: AttributeType,
+  value: string,
+  key: string,
+) => (tabId: number | null) =>
+  tabId
+    ? tabs.executeScript(tabId, {
+        code: removeOnClickWithAttr(attrType, key, value),
       })
-    }
-  })
-}
+    : Promise.reject(new Error('Unable to query tabId'))
 
 const hasSites = (data: object): data is State =>
   !!(data && (data as State).sites)
