@@ -6,19 +6,25 @@
   "author": "Drew Wyatt <drew.j.wyatt@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p",
     "start": "webpack --watch"
   },
   "dependencies": {
-    "@types/chrome": "^0.0.72",
+    "@types/react": "^16.4.12",
+    "@types/react-dom": "^16.0.7",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.2",
     "prettier": "^1.14.2",
+    "ramda": "^0.25.0",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
     "ts-loader": "^4.5.0",
     "typescript": "^3.0.1",
     "webpack": "^4.16.5"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.72",
+    "@types/ramda": "^0.25.36",
     "webpack-command": "^0.4.1"
   }
 }

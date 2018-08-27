@@ -6,20 +6,20 @@ module.exports = {
   entry: {
     background: './src/background.ts',
     options: './src/options.ts',
-    popup: './src/popup.ts',
+    popup: './src/popup.tsx',
   },
   mode: 'production',
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: ['.ts'],
+    extensions: ['.ts', '.js'],
     modules: ['node_modules', 'src'],
   },
   output: {
