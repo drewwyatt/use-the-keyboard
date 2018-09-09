@@ -1,8 +1,19 @@
 import * as React from 'react'
 import { render } from 'react-dom'
 import { State, Site, Hotkey, AttributeType } from 'models'
-import { storage, tabs } from 'services'
+import { env, storage, tabs } from 'services'
 import { curry, pipeP } from 'ramda'
+import { init as initSentry, captureEvent, Severity } from '@sentry/browser'
+
+initSentry({
+  dsn: env.sentryDSN,
+})
+
+const log = (message: string) =>
+  captureEvent({
+    message,
+    level: Severity.Debug,
+  })
 
 const reactRoot = document.createElement('main')
 document.body.appendChild(reactRoot)

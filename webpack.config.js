@@ -1,6 +1,7 @@
 const path = require('path')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
 
 module.exports = {
   entry: {
@@ -29,5 +30,6 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin([{ from: './public' }], { flatten: true }),
     new CleanWebpackPlugin(['dist']),
+    new Dotenv({ safe: true }),
   ],
 }
