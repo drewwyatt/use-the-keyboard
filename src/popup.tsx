@@ -17,6 +17,12 @@ const log = (message: string) =>
     level: Severity.Debug,
   })
 
+const logError = ({ message }: Error) =>
+  captureEvent({
+    message,
+    level: Severity.Error,
+  })
+
 const reactRoot = document.createElement('main')
 document.body.appendChild(reactRoot)
 
@@ -68,9 +74,7 @@ const blockClickOnTabWithAttrs = (
   tabs
     .query()
     .pipe(map(extractActiveTabId))
-    .subscribe(tryExecuteScriptOnTab(attr, value, key), e =>
-      console.error('oh no:', e),
-    )
+    .subscribe(tryExecuteScriptOnTab(attr, value, key), logError)
 
 const createClickHandler = curry(blockClickOnTabWithAttrs)
 
