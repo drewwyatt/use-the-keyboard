@@ -1,8 +1,10 @@
 import * as React from 'react'
+import { throwError } from 'rxjs'
+import { map } from 'rxjs/operators'
 import { render } from 'react-dom'
 import { State, Site, Hotkey, AttributeType } from 'models'
 import { env, storage, tabs } from 'services'
-import { curry, pipeP } from 'ramda'
+import { curry } from 'ramda'
 import { init as initSentry, captureEvent, Severity } from '@sentry/browser'
 
 initSentry({
@@ -63,21 +65,17 @@ const blockClickOnTabWithAttrs = (
   key: string,
   _: React.MouseEvent<HTMLButtonElement>,
 ) =>
-  pipeP(
-    tabs.query,
-    wrapInPromise(extractActiveTabId),
-    tryExecuteScriptOnTab(attr, value, key),
-  )({})
+  tabs
+    .query()
+    .pipe(map(extractActiveTabId))
+    .subscribe(tryExecuteScriptOnTab(attr, value, key), e =>
+      console.error('oh no:', e),
+    )
 
 const createClickHandler = curry(blockClickOnTabWithAttrs)
 
-const wrapInPromise = <T extends Function>(func: T) => (...args: any[]) =>
-  Promise.resolve(func(...args))
-
-const extractActiveTabId = (tabs: chrome.tabs.Tab[]) =>
-  console.log('extractActiveTabId', tabs) || (tabs && tabs[0])
-    ? tabs[0].id
-    : null
+const extractActiveTabId = (tabs: chrome.tabs.Tab[]): number =>
+  tabs && tabs[0] ? tabs[0].id! : -1
 
 const tryExecuteScriptOnTab = (
   attrType: AttributeType,
@@ -88,7 +86,7 @@ const tryExecuteScriptOnTab = (
     ? tabs.executeScript(tabId, {
         code: removeOnClickWithAttr(attrType, key, value),
       })
-    : Promise.reject(new Error('Unable to query tabId'))
+    : throwError(new Error('Unable to query tabId'))
 
 const hasSites = (data: object): data is State =>
   !!(data && (data as State).sites)

@@ -1,6 +1,11 @@
-export const query = async () =>
-  new Promise<chrome.tabs.Tab[]>(res =>
-    chrome.tabs.query({ active: true, currentWindow: true }, res),
+import { Observable, Observer } from 'rxjs'
+
+export const query = (): Observable<chrome.tabs.Tab[]> =>
+  Observable.create((obs: Observer<chrome.tabs.Tab[]>) =>
+    chrome.tabs.query(
+      { active: true, currentWindow: true },
+      obs.next.bind(obs),
+    ),
   )
 
 export const executeScript = async (
